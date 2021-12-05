@@ -80,7 +80,7 @@ int init(lua_State *L)
     const char *HOME = getenv("HOME");
     strcpy(dst, HOME);
     strcat(dst, PATH_SEP);
-    strcat(dst, ".luna");
+    strcat(dst, ".lluna");
     strcat(dst, PATH_SEP);
     strcat(dst, "std");
     strcat(dst, PATH_SEP);
@@ -90,7 +90,7 @@ int init(lua_State *L)
 
     strcpy(dst, HOME);
     strcat(dst, PATH_SEP);
-    strcat(dst, ".luna");
+    strcat(dst, ".lluna");
     strcat(dst, PATH_SEP);
     strcat(dst, "std");
     strcat(dst, PATH_SEP);
