@@ -26,14 +26,8 @@ ffi.cdef [[
     int mkdir(const char *pathname, mode_t mode);
 ]]
 
-function path:_new(...)
-    local o = {}
-
-    for i = 1, select("#", ...) do
-        table.insert(o, tostring(select(i, ...)))
-    end
-
-    return setmetatable(o, path)
+local function join(one, other)
+    return path(tostring(one), tostring(other))
 end
 
 function path:__tostring()
@@ -48,7 +42,7 @@ function path.pwd()
     while true do
         local buf = ffi.new("char[?]", size)
         if C.getcwd(buf, size) ~= nil then
-            return ffi.string(buf)
+            return path(ffi.string(buf)), nil
         end
         local err = ffi.errno()
         if err ~= ERANGE then
@@ -62,8 +56,8 @@ function path:mkdir(mode)
     for i = 1, #self do
         local p = table.concat(self, SEP, 1, i)
         ok = C.mkdir(p, mode or 509)
-        if ok ~= 0 then
-            return error("could not create " .. tostring(self), 2)
+        if ok ~= 0 and ok ~= -1 then
+            return error(ok .. "could not create " .. tostring(self), 2)
         end
     end
 end
@@ -76,10 +70,21 @@ function path:chdir()
 end
 
 function path:rmdir()
-    if lib.rmdir(tostring(self)) == 0 then
+    if C.rmdir(tostring(self)) == 0 then
         return true
     end
-    return nil, strerror(ffi.errno)
+    return nil, strerror(ffi.errno())
+end
+
+path.__div = join
+function path:_new(...)
+    local o = {}
+
+    for i = 1, select("#", ...) do
+        table.insert(o, tostring(select(i, ...)))
+    end
+
+    return setmetatable(o, path)
 end
 
 return setmetatable(path, {
