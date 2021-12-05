@@ -14,10 +14,9 @@ static const char *program_name;
 void usage()
 {
     fprintf(stderr, "usage: %s [options] [FILE]\n", program_name);
-    fputs("Avaliable options are:", stderr);
-    fputs("  -v\tShow version information.", stderr);
-    fputs("  -h\tShow this message.", stderr);
-    fputs("\n", stderr);
+    fputs("Avaliable options are:\n", stderr);
+    fputs("  -v\tShow version information.\n", stderr);
+    fputs("  -h\tShow this message.\n", stderr);
 }
 void error(lua_State *L, const char *fmt, ...)
 {
