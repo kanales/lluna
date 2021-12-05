@@ -12,9 +12,10 @@ static const char *program_name;
 
 void usage()
 {
-    fprintf(stderr, "usage: %s [options] FILE\n", program_name);
+    fprintf(stderr, "usage: %s [options] [FILE]\n", program_name);
     fputs("Avaliable options are:", stderr);
     fputs("  -v\tShow version information.", stderr);
+    fputs("  -h\tShow this message.", stderr);
     fputs("\n", stderr);
 }
 void error(lua_State *L, const char *fmt, ...)
@@ -98,6 +99,21 @@ int init(lua_State *L)
     return 1;
 }
 
+int repl(lua_State *L)
+{
+    // Very WIP
+    char buff[256];
+    while (fgets(buff, sizeof(buff), stdin) != NULL)
+    {
+        int err = luaL_loadbuffer(L, buff, strlen(buff), "line") ||
+                  lua_pcall(L, 0, 0, 0);
+        if (err)
+            error(L, "%s", lua_tostring(L, -1));
+    }
+
+    return 0;
+}
+
 int main(const int argc, char *const argv[])
 {
     int err;
@@ -107,10 +123,14 @@ int main(const int argc, char *const argv[])
     program_name = argv[0];
 
     int option;
-    while ((option = getopt(argc, argv, "v")) != -1)
+    while ((option = getopt(argc, argv, "hv")) != -1)
     {
         switch (option)
         {
+        case 'h':
+            usage();
+            exit(0);
+            break;
         case 'v':
             // version
             printf("%s 0.1.0\n", program_name);
@@ -120,14 +140,13 @@ int main(const int argc, char *const argv[])
             break;
         }
     }
-
-    if (optind >= argc)
-    {
-        usage();
-        exit(1);
-    }
-
     init(L);
+
+    if (optind == argc)
+    {
+        repl(L);
+        exit(0);
+    }
 
     err = luaL_dofile(L, argv[1]);
     if (err)
