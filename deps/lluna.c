@@ -72,6 +72,15 @@ int set_luacpath(lua_State *L, const char *path)
 #define PATH_SEP "/"
 #endif
 
+int lua_global_module(lua_State *L, const char *s)
+{
+    lua_getglobal(L, "require");
+    lua_pushstring(L, s);
+    lua_call(L, 1, 1);
+    lua_setglobal(L, s);
+    return 1;
+}
+
 int init(lua_State *L)
 {
     char dst[256];
@@ -96,6 +105,10 @@ int init(lua_State *L)
     strcat(dst, PATH_SEP);
     strcat(dst, "?.so");
     set_luacpath(L, dst);
+
+    lua_global_module(L, "record");
+    lua_global_module(L, "path");
+
     return 1;
 }
 
