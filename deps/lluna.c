@@ -5,6 +5,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #include <luajit.h>
+#include "repl.h"
 
 #define EXIT_FAILURE 1
 
@@ -25,7 +26,6 @@ void error(lua_State *L, const char *fmt, ...)
     vfprintf(stderr, fmt, argp);
     va_end(argp);
     lua_close(L);
-    exit(EXIT_FAILURE);
 }
 
 int set_luapath(lua_State *L, const char *path)
@@ -112,21 +112,6 @@ int init(lua_State *L)
     return 1;
 }
 
-int repl(lua_State *L)
-{
-    // Very WIP
-    char buff[256];
-    while (fgets(buff, sizeof(buff), stdin) != NULL)
-    {
-        int err = luaL_loadbuffer(L, buff, strlen(buff), "line") ||
-                  lua_pcall(L, 0, 0, 0);
-        if (err)
-            error(L, "%s", lua_tostring(L, -1));
-    }
-
-    return 0;
-}
-
 int main(const int argc, char *const argv[])
 {
     int err;
@@ -157,7 +142,7 @@ int main(const int argc, char *const argv[])
 
     if (optind == argc)
     {
-        repl(L);
+        repl_loop(L);
         exit(0);
     }
 

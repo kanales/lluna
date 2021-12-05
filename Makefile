@@ -2,7 +2,7 @@ CFLAGS= -I/usr/local/include/luajit-2.0/
 LDFLAGS= -lluajit
 
 # Requires luajit, libcurl
-lluna: deps/lluna.o
+lluna: deps/lluna.o deps/repl.o
 	$(CC) $(LDFLAGS) -pagezero_size 10000 -o lluna $^
 src/std/termios.so: deps/lua_termios.o
 	$(CC) $(LDFLAGS) -fPIC --shared -o $@ $^ 
