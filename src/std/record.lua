@@ -38,6 +38,9 @@ return function(name, fields)
             end
             return true
         end,
+        __ne = function(self, other)
+            return not (self == other)
+        end,
         __le = function(self, other)
             if getmetatable(self) ~= getmetatable(other) then
                 return error("not comparable")
