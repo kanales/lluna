@@ -1,22 +1,30 @@
-CFLAGS= -I/usr/local/include/luajit-2.0/
-LDFLAGS= -lluajit -lreadline
+.POSIX: 
+.SUFFIXES:
+
+
+LUA_JIT_INCLUDE =	/usr/local/include/luajit-2.0/
+LUA_JIT_LIB    	= /usr/local/Cellar/luajit/2.0.5/lib
+CFLAGS					= -Wall -I$(LUA_JIT_INCLUDE)
+LDFLAGS 				= -L$(LUA_JIT_LIB) 
+LDLIBS 					= -lluajit -lreadline
+PREFIX 					= $(HOME)/.local
+
+.PHONY: all clean install
+all: lluna
+
+install: all
+	mkdir -p 		$(DESTDIR)$(PREFIX)/bin
+	cp -f lluna	$(DESTDIR)$(PREFIX)/bin
+
+clean: 
+	$(RM) lluna **/*.o **/*.so
 
 # Requires luajit, libcurl and readline
 lluna: deps/lluna.o deps/repl.o
-	$(CC) $(LDFLAGS) -pagezero_size 10000 -o lluna $^
+	$(CC) $(LDFLAGS) $(LDLIBS) -pagezero_size 10000 -o lluna $^
 src/std/termios.so: deps/lua_termios.o
-	$(CC) $(LDFLAGS) -fPIC --shared -o $@ $^ 
+	$(CC) $(LDFLAGS) $(LDLIBS) -fPIC --shared -o $@ $^ 
 
 deps/%.o: deps/%.c
 	$(CC) $(CFLAGS) -c -o $@ $^
 
-.PHONY: install
-install: lluna src/std/termios.so
-	-rm -rf $(HOME)/.lluna
-	-mkdir $(HOME)/.lluna
-	-cp -r src/std $(HOME)/.lluna
-	-cp lluna /usr/local/bin/lluna
-
-.PHONY: clean
-clean:
-	$(RM) lluna **/*.o **/*.so
