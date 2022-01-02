@@ -16,12 +16,10 @@ It is **not** intended to:
 
 ## Installation
 
-Only installation from source from now. Note that installation requires `libluajit` and `libcurl`.
+Only installation from source from now. It is recommended you use the provided `install.sh` that will handle the installation of the standard library for you. _Note: installation requires `libluajit` and `libcurl`._
 
 ```sh
-git clone https://github.com/kanales/lluna/ && cd lluna
-make
-make install
+. install.sh
 ```
 
 ## Improvements
