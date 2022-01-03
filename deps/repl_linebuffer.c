@@ -45,23 +45,20 @@ void cursor_right() {
 }
 
 void cursor_up() {
-  int og = hist_ptr;
-  hist_ptr = (hist_ptr - 1) % HISTLEN;
   const char *ptr = history[hist_ptr];
-  if (ptr != NULL)
+  if (ptr != NULL) {
+
     memccpy(line_buffer, ptr, '\0', BUFSIZE);
-  else
-    hist_ptr = og;
+    hist_ptr = (hist_ptr - 1) % HISTLEN;
+  }
 }
 
 void cursor_down() {
-  int og = hist_ptr;
-  hist_ptr = (hist_ptr + 1) % HISTLEN;
   const char *ptr = history[hist_ptr];
-  if (ptr != NULL)
+  if (ptr != NULL) {
     memccpy(line_buffer, ptr, '\0', BUFSIZE);
-  else
-    hist_ptr = og;
+    hist_ptr = (hist_ptr + 1) % HISTLEN;
+  }
 }
 void history_add(const char *s) {
   if (strlen(s) == 0)
