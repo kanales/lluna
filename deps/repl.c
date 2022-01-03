@@ -77,7 +77,7 @@ void handle_newline(lua_State *L) {
   line_buffer = buffer_get();
   history_add(line_buffer);
   line_buffer = execute(L, line_buffer);
-  if (strlen(line_buffer) > 1)
+  if (strlen(line_buffer) > 0)
     fprintf(stderr, "%s\r\n", line_buffer);
   cursor_reset();
   buffer_clear();

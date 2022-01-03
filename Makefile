@@ -25,7 +25,7 @@ install: all
 	@$(MAKE) -C lluna-std install
 
 clean: 
-	$(RM) lluna **/*.o **/*.so 
+	$(RM) lluna **/*.o **/*.so  **/*.lua.h
 
 bench/main: bench/main.o
 	$(CC) $(LDFLAGS) -o $@ $^
