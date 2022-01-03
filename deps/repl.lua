@@ -89,7 +89,10 @@ function repl.execute(s)
 	if not f then
 		return err
 	end
-	local res = f()
+	local ok, res = pcall(f)
+	if not ok then
+		return "\x1b[31mError:\x1b[39m " .. res
+	end
 	if res == nil then
 		return ""
 	end
