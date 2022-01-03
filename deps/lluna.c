@@ -1,4 +1,3 @@
-#include "repl.h"
 #include <lauxlib.h>
 #include <luajit.h>
 #include <lualib.h>
@@ -7,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "repl.h"
 #define EXIT_FAILURE 1
 
 static const char *program_name;
@@ -142,7 +142,7 @@ int main(const int argc, char *const argv[]) {
   init(L);
 
   if (optind == argc) {
-    repl_loop(L);
+    repl(L);
     exit(0);
   }
 

@@ -9,6 +9,9 @@ LDFLAGS 				= -L$(LUAJIT_LIB)
 LDLIBS 					= -lluajit -lreadline
 PREFIX 					= $(HOME)/.local
 
+REPL_SRC        = $(wildcard deps/repl*.c)
+REPL_OBJ				= $(REPL_SRC:.c=.o)
+
 .PHONY: all clean install bench
 all: lluna
 
@@ -22,17 +25,23 @@ install: all
 	@$(MAKE) -C lluna-std install
 
 clean: 
-	$(RM) lluna **/*.o **/*.so
+	$(RM) lluna **/*.o **/*.so 
 
 bench/main: bench/main.o
 	$(CC) $(LDFLAGS) -o $@ $^
 
 # Requires luajit, libcurl and readline
-lluna: deps/lluna.o deps/repl.o deps/lluna.o
+lluna: deps/lluna.o deps/lluna.o $(REPL_OBJ)
 	$(CC) $(LDFLAGS) $(LDLIBS) -pagezero_size 10000 -o lluna $^
 src/std/termios.so: deps/lua_termios.o
 	$(CC) $(LDFLAGS) $(LDLIBS) -fPIC --shared -o $@ $^ 
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $^
+deps/lluna.lua: lluna-std/lua/lluna.lua
+	cp $^ $@
+
+%.lua.h: %.lua
+	luajit -b $^ $@
+
+%.o: %.c deps/repl.lua.h deps/lluna.lua.h
+	$(CC) $(CFLAGS) -c -o $@ $<
 

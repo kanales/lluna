@@ -3,6 +3,6 @@
 
 #include <luajit.h>
 
-void repl_loop(lua_State *L);
+int repl(lua_State *L);
 
 #endif
