@@ -34,6 +34,7 @@ local function strip_ansi(s)
 end
 
 local function handle_word(w)
+	w = strip_ansi(w)
 	if reserved[w] then
 		return "\x1b[35m" .. w .. "\x1b[39m"
 	end
@@ -53,11 +54,11 @@ end
 
 function repl.before_print(s)
 	local out = s
-		:gsub("(%d+)", handle_number)
-		:gsub("(%w+)", handle_word)
+		:gsub("(%s%d+)", handle_number)
+		:gsub("^(%d+)", handle_number)
+		:gsub("([%w_]+)", handle_word)
 		:gsub('(".+")', handle_string)
 		:gsub("('.+')", handle_string)
-
 	return out
 end
 
@@ -78,7 +79,7 @@ local function prepare(s)
 			return s
 		end
 	end
-	if s:match("^%a+%s*=") then
+	if s:match("^.*=") then
 		return s
 	end
 	return "return " .. s
