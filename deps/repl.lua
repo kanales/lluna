@@ -94,7 +94,6 @@ function repl.execute(s)
 	if not ok then
 		return "\x1b[31mError:\x1b[39m " .. res
 	end
-	io.stdout:write(">" .. tostring(res))
 	return tostring(res)
 end
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-set -euo pipefail
+set -eu
 
 log() {
   echo "$@" 1>&2
@@ -8,13 +8,14 @@ log() {
 BUILD="./build"
 PREFIX="$HOME/.local"
 
-log "🏗️  " "Creating temp folders"
+log "🏗️  " "Creating destination folders"
 
 mkdir -p "$PREFIX"
 mkdir -p "$PREFIX/.local/share/lluna"
 
-mkdir -p "$BUILD"
-
+log "⬇️  " "Updating submodules..."
+git submodule update --init --recursive
+log "\x1b[7mOK\x1b[27m"
 
 # log "🚚 " "Updating \x1b[1mlluna-std\x1b[22m\t\t" "\c"
 # if [ ! -d "$BUILD/lluna-std" ]
