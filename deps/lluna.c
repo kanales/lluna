@@ -142,11 +142,17 @@ int main(const int argc, char *const argv[]) {
     case 'l':
       lua_getglobal(L, "require");
       lua_pushstring(L, optarg);
-      lua_call(L, 1, 1);
+      if ((err = lua_pcall(L, 1, 1, 0)) != 0) {
+        fprintf(stderr, "%s", lua_tostring(L, -1));
+        exit(err);
+      }
       lua_setglobal(L, optarg);
       break;
     case 'e':
       err = luaL_dostring(L, optarg);
+      if (err) {
+        fprintf(stderr, "%s", lua_tostring(L, -1));
+      }
       exit(err);
       break;
     case ':':
