@@ -12,10 +12,14 @@
 static const char *program_name;
 
 void usage() {
-  fprintf(stderr, "usage: %s [options] [FILE]\n", program_name);
+  fprintf(stderr,
+          "usage: %s [-l <libname>] [-v | -h | -e <statement> | FILE]\n",
+          program_name);
   fputs("Avaliable options are:", stderr);
   fputs("  -v\tShow version information.", stderr);
   fputs("  -h\tShow this message.", stderr);
+  fputs("  -e\tExecute statement.", stderr);
+  fputs("  -l\tExecute load library.", stderr);
   fputs("\n", stderr);
 }
 void error(lua_State *L, const char *fmt, ...) {
@@ -70,7 +74,7 @@ int set_luacpath(lua_State *L, const char *path) {
 #ifdef _WIN32
 #define PATH_SEP "\\"
 #else
-#define PATH_SEP "/"
+#define PATH_SEP "/" options
 #endif
 
 int lua_global_module(lua_State *L, const char *s) {
@@ -124,7 +128,7 @@ int main(const int argc, char *const argv[]) {
   program_name = argv[0];
 
   int option;
-  while ((option = getopt(argc, argv, "hv")) != -1) {
+  while ((option = getopt(argc, argv, "hve:l:")) != -1) {
     switch (option) {
     case 'h':
       usage();
@@ -135,7 +139,29 @@ int main(const int argc, char *const argv[]) {
       printf("%s 0.1.0\n", program_name);
       exit(0);
       break;
+    case 'l':
+      lua_getglobal(L, "require");
+      lua_pushstring(L, optarg);
+      lua_call(L, 1, 1);
+      lua_setglobal(L, optarg);
+      break;
+    case 'e':
+      err = luaL_dostring(L, optarg);
+      exit(err);
+      break;
+    case ':':
+      fprintf(stderr, "Option -%c requires an argument.\n", optopt);
+      usage();
+      exit(1);
+      break;
+    case '?':
+      fprintf(stderr, "Unknown option -%c.\n", optopt);
+      usage();
+      exit(1);
+      break;
     default:
+      fputs("Error: Unreachable", stderr);
+      exit(1);
       break;
     }
   }
